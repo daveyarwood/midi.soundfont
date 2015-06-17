@@ -1,16 +1,43 @@
 (ns midi.soundfont
-  (:require [clojure.java.io :as io]
-            [boot.core])
-  (:import (javax.sound.midi MidiSystem)))
+  (:require [clojure.java.io :as io])
+  (:import (javax.sound.midi MidiSystem Synthesizer)))
 
 (defn load-all-instruments!
-  "Loads all of the instruments from a soundfont (.sf2 file handle) into a MIDI
-   synthesizer.
+  "Loads all of the instruments from a soundfont into a MIDI synthesizer.
 
-   Can accept either a file handle or a string representing the path to one."
-  [synth sf2-file]
-  (let [sf2-file (if (instance? java.io.File sf2-file)
-                   sf2-file
-                   (io/file sf2-file))]
-    (.unloadAllInstruments synth (.getDefaultSoundbank synth))
-    (.loadAllInstruments synth (MidiSystem/getSoundbank sf2-file))))
+   `soundfont` must be a supported soundfont (i.e. a DLS or SF2 file), 
+    as either a File or an InputStream."
+  [^Synthesizer synth soundfont]
+  (.open synth) ; open synth, in case it isn't open already
+  (.unloadAllInstruments synth (.getDefaultSoundbank synth))
+  (.loadAllInstruments synth (MidiSystem/getSoundbank soundfont)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(comment "
+  for testing purposes, e.g.:
+
+    (merge-env! :dependencies '[[midi.soundfont.fluid-r3 \"0.1.0\"]])
+    (require '[midi.soundfont.fluid-r3 :as fluid])
+    (import '(javax.sound.midi MidiSystem Synthesizer))
+          
+    (def synth (MidiSystem/getSynthesizer))
+    (load-all-instruments! synth fluid/sf2)
+          
+    (midi-test synth)  ; you should hear a nice-sounding piano
+    (load-patch synth 30)
+    (midi-test synth)  ; you should hear a gnarly distorted guitar!
+")
+
+(defn load-patch [^Synthesizer synth patch-number]
+  (let [channel     (first (.getChannels synth))]
+    (.programChange channel (dec patch-number))))
+
+(defn midi-test [^Synthesizer synth]
+  (let [channel (first (.getChannels synth))
+        demo-notes [43 47 50 55 59 62 67 71 74 79]]
+    (doseq [note demo-notes]
+      (. channel noteOn note 127)
+      (Thread/sleep 250)
+      (. channel noteOff note))))   
+
