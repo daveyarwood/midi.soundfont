@@ -17,7 +17,7 @@
 (comment "
   for testing purposes, e.g.:
 
-    (merge-env! :dependencies '[[midi.soundfont.fluid-r3 \"0.1.0\"]])
+    (merge-env! :dependencies '[[org.bitbucket.daveyarwood/fluid-r3 \"0.1.1\"]])
     (require '[midi.soundfont.fluid-r3 :as fluid])
     (import '(javax.sound.midi MidiSystem Synthesizer))
           
