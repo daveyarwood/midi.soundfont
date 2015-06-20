@@ -12,22 +12,7 @@
   (.unloadAllInstruments synth (.getDefaultSoundbank synth))
   (.loadAllInstruments synth (MidiSystem/getSoundbank soundfont)))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(comment "
-  for testing purposes, e.g.:
-
-    (merge-env! :dependencies '[[org.bitbucket.daveyarwood/fluid-r3 \"0.1.1\"]])
-    (require '[midi.soundfont.fluid-r3 :as fluid])
-    (import '(javax.sound.midi MidiSystem Synthesizer))
-          
-    (def synth (MidiSystem/getSynthesizer))
-    (load-all-instruments! synth fluid/sf2)
-          
-    (midi-test synth)  ; you should hear a nice-sounding piano
-    (load-patch synth 30)
-    (midi-test synth)  ; you should hear a gnarly distorted guitar!
-")
+;;; for testing purposes ;;;
 
 (defn load-patch [^Synthesizer synth patch-number]
   (let [channel     (first (.getChannels synth))]
