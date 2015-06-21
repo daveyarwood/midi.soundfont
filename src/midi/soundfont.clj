@@ -15,7 +15,7 @@
 ;;; for testing purposes ;;;
 
 (defn load-patch [^Synthesizer synth patch-number]
-  (let [channel     (first (.getChannels synth))]
+  (let [channel (first (.getChannels synth))]
     (.programChange channel (dec patch-number))))
 
 (defn midi-test [^Synthesizer synth]
