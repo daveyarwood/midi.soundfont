@@ -1,6 +1,6 @@
 # midi.soundfont
 
-A library for loading MIDI soundfonts into the JVM, and making it quick and easy to get nice sounds out of your MIDI system. :notes:
+A Clojure library for loading MIDI soundfonts into the JVM, and making it quick and easy to get nice sounds out of your MIDI system. :notes:
 
 ## Example: FluidR3
 
