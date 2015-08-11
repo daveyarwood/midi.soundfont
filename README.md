@@ -1,5 +1,7 @@
 # midi.soundfont
 
+[![Clojars Project](http://clojars.org/midi.soundfont/latest-version.svg)](http://clojars.org/midi.soundfont)
+
 A Clojure library for loading MIDI soundfonts into the JVM, and making it quick and easy to get nice sounds out of your MIDI system. :notes:
 
 ## Example: FluidR3
