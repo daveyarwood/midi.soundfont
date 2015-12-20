@@ -2,15 +2,37 @@
   (:require [clojure.java.io :as io])
   (:import (javax.sound.midi MidiSystem Synthesizer)))
 
-(defn load-all-instruments!
-  "Loads all of the instruments from a soundfont into a MIDI synthesizer.
+(defprotocol Soundbank
+  (soundbank-of [x]))
 
-   `soundfont` must be a supported soundfont (i.e. a DLS or SF2 file), 
-    as either a File or an InputStream."
-  [^Synthesizer synth soundfont]
-  (.open synth) ; open synth, in case it isn't open already
-  (.unloadAllInstruments synth (.getDefaultSoundbank synth))
-  (.loadAllInstruments synth (MidiSystem/getSoundbank soundfont)))
+(extend-protocol Soundbank
+  Object
+  (soundbank-of [☠]
+    (throw (Exception.
+             (format "Expected a File, InputStream, or Soundbank; got %s"
+                     (type ☠)))))
+
+  java.io.File
+  (soundbank-of [sf] (MidiSystem/getSoundbank sf))
+
+  java.io.InputStream
+  (soundbank-of [sf] (MidiSystem/getSoundbank sf))
+
+  javax.sound.midi.Soundbank
+  (soundbank-of [sb] sb))
+
+(defn load-all-instruments!
+  "Loads all of the instruments from a soundbank or soundfont into a MIDI
+   synthesizer.
+
+   `src` may be either an existing (i.e. pre-evaluated) soundbank, or a
+   supported soundfont (i.e. a DLS or SF2 file) in the form of a File or
+   an InputStream."
+  [^Synthesizer synth src]
+  (doto synth
+    (.open); open synth, in case it isn't open already
+    (.unloadAllInstruments (.getDefaultSoundbank synth))
+    (.loadAllInstruments (soundbank-of src))))
 
 ;;; for testing purposes ;;;
 
@@ -24,5 +46,5 @@
     (doseq [note demo-notes]
       (. channel noteOn note 127)
       (Thread/sleep 250)
-      (. channel noteOff note))))   
+      (. channel noteOff note))))
 
